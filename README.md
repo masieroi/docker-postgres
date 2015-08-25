@@ -1,15 +1,30 @@
-postgres-whd
-============
+# Docker image for Postgres 
+Originally forked from https://github.com/macadmins/postgres
 
-Docker container for postgres that accepts remote connections from Docker IPs - all 172.17.0.1/16 IP addresses.
+The image is build in docker registry: https://hub.docker.com/r/masieroi/postgres/
 
-This postgres database is designed for use in the [WebHelpDesk container](https://registry.hub.docker.com/u/macadmins/whd/) and/or with [SalWHD](https://registry.hub.docker.com/u/macadmins/salwhd/).
+Docker container for PostgreSQL that accepts remote connections from all addresses so it is intended to be be used on a local development environment 
 
-In addition, now sets up database according to environment variables:  
+The image is designed to be used with [Liferay Docker container](https://hub.docker.com/r/masieroi/liferay/).
+
+In addition, we can automaticazlly add a new user/database according to the following environment variables:  
 DB_NAME database  
 DB_USER admin  
 DB_PASS password  
 
-To use:
------
-`docker run -d -e DB_NAME=db -e DB_USER=admin -e DB_PASS=password macadmins/postgres`
+To start the container
+```
+docker run -p 5432:5432 -e DB_NAME=lportal -e DB_USER=lportal -e DB_PASS=lportal -d --name protones-postgres --volumes-from liferay-postgres-data masieroi/postgres:9.3.5
+```
+
+If you want to isolate the data folder you can use a light Busybox image https://hub.docker.com/_/busybox/
+
+```
+docker create -v /var/lib/postgresql/data --name liferay-postgres-data busybox
+```
+
+then start the Postgres container linking the data folder to the Busybox *liferay-postgres-data*
+
+```
+docker run -p 5432:5432 -e DB_NAME=lportal -e DB_USER=lportal -e DB_PASS=lportal -d --name protones-postgres --volumes-from liferay-postgres-data masieroi/postgres:9.3.5
+```
